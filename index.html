@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense & Savings Tracker</title>
+  <style>
+    :root {
+      --income: #16a34a;
+      --expense: #dc2626;
+      --saving: #2563eb;
+      --budget: #7c3aed;
+      --bg: #f9fafb;
+      --card: #fff;
+      --text-dark: #111827;
+      --text-light: #6b7280;
+      --radius: 16px;
+      --shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      margin: 0;
+      padding: 20px;
+      color: var(--text-dark);
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .header-icon {
+      background: linear-gradient(135deg, #6366f1, #3b82f6);
+      padding: 12px;
+      border-radius: 12px;
+      color: white;
+      font-size: 24px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .amount {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .amount.green { color: var(--income); }
+    .amount.red { color: var(--expense); }
+    .amount.blue { color: var(--saving); }
+    .amount.purple { color: var(--budget); }
+
+    .change {
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 1rem;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .no-transactions {
+      text-align: center;
+      color: var(--text-light);
+      padding: 20px;
+    }
+
+    progress {
+      width: 100%;
+      height: 8px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin-top: 32px;
+    }
+
+    @media (min-width: 768px) {
+      body { max-width: 480px; margin: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-icon">💰</div>
+    <div>
+      <h1>Expense & Savings Tracker</h1>
+      <p>Take control of your finances with instant updates</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Total Income</div>
+    <div class="amount green" id="totalIncome">₹0</div>
+    <div class="change" id="incomeChange">+0% from last month</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Total Expenses</div>
+    <div class="amount red" id="totalExpenses">₹0</div>
+    <div class="change" id="expenseChange">+0% from last month</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Net Savings</div>
+    <div class="amount blue" id="netSavings">₹0</div>
+    <div class="change">Saving this month</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Budget Remaining</div>
+    <div class="amount purple" id="budgetRemaining">₹50,000</div>
+    <div class="change"><span id="budgetPercent">0%</span> used</div>
+    <progress id="budgetProgress" value="0" max="100"></progress>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Add Transaction</div>
+    <div class="form-group">
+      <label>Description</label>
+      <input type="text" id="desc" placeholder="Enter description...">
+    </div>
+    <div class="form-group">
+      <label>Amount (₹)</label>
+      <input type="number" id="amount" placeholder="0.00">
+    </div>
+    <div class="form-group">
+      <label>Type</label>
+      <select id="type">
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Category</label>
+      <select id="category">
+        <option value="food">🍽️ Food & Dining</option>
+        <option value="travel">✈️ Travel</option>
+        <option value="bills">💡 Bills</option>
+        <option value="entertainment">🎬 Entertainment</option>
+        <option value="other">🧾 Other</option>
+      </select>
+    </div>
+    <button id="addBtn">+ Add Transaction</button>
+  </div>
+
+  <div class="card" id="transactionList">
+    <div class="no-transactions">No transactions yet</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Monthly Budget</div>
+    <div class="amount purple">₹50,000</div>
+    <div class="change">Current monthly budget</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Expense Breakdown</div>
+    <div class="no-transactions">Start adding expenses to see your spending breakdown</div>
+  </div>
+
+  <footer>
+    Built with ❤️ using HTML, CSS & JavaScript<br>
+    Real-time updates • Local Storage • Responsive
+  </footer>
+
+  <script>
+    let income = 0;
+    let expenses = 0;
+    const budget = 50000;
+    const transactions = [];
+
+    const totalIncome = document.getElementById('totalIncome');
+    const totalExpenses = document.getElementById('totalExpenses');
+    const netSavings = document.getElementById('netSavings');
+    const budgetRemaining = document.getElementById('budgetRemaining');
+    const budgetPercent = document.getElementById('budgetPercent');
+    const budgetProgress = document.getElementById('budgetProgress');
+    const list = document.getElementById('transactionList');
+
+    document.getElementById('addBtn').addEventListener('click', () => {
+      const desc = document.getElementById('desc').value.trim();
+      const amount = parseFloat(document.getElementById('amount').value);
+      const type = document.getElementById('type').value;
+
+      if (!desc || isNaN(amount) || amount <= 0) {
+        alert("Please enter valid description and amount!");
+        return;
+      }
+
+      const transaction = { desc, amount, type };
+      transactions.push(transaction);
+
+      if (type === 'income') income += amount;
+      else expenses += amount;
+
+      updateUI();
+      document.getElementById('desc').value = '';
+      document.getElementById('amount').value = '';
+    });
+
+    function updateUI() {
+      totalIncome.textContent = `₹${income}`;
+      totalExpenses.textContent = `₹${expenses}`;
+      const savings = income - expenses;
+      netSavings.textContent = `₹${savings}`;
+      const remaining = budget - expenses;
+      budgetRemaining.textContent = `₹${remaining}`;
+      const used = (expenses / budget) * 100;
+      budgetPercent.textContent = `${used.toFixed(1)}%`;
+      budgetProgress.value = used;
+
+      if (transactions.length > 0) {
+        list.innerHTML = transactions.map(t => `
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;">
+            <span>${t.desc}</span>
+            <span style="color:${t.type === 'income' ? 'green' : 'red'};">
+              ${t.type === 'income' ? '+' : '-'}₹${t.amount}
+            </span>
+          </div>
+        `).join('');
+      } else {
+        list.innerHTML = `<div class="no-transactions">No transactions yet</div>`;
+      }
+    }
+  </script>
+
+</body>
+</html>
